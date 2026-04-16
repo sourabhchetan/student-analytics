@@ -3,7 +3,7 @@ from app.routes import main
 from app.auth import auth
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = "secret"
 
 app.register_blueprint(main)
 app.register_blueprint(auth)
