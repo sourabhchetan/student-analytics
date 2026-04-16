@@ -28,14 +28,6 @@ A full-stack web application that predicts student performance based on study ha
 * **Machine Learning:** Scikit-learn
 * **Deployment:** Render
 
----
-
-## 📸 Screenshots
-
-*Add screenshots here if needed*
-
----
-
 ## ⚙️ How It Works
 
 1. User signs up / logs in
