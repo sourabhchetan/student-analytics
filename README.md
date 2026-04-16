@@ -1,4 +1,3 @@
-![Project Banner](https://via.placeholder.com/1200x300?text=AI+Student+Predictor)
 # 🚀 AI Student Performance Predictor
 
 > 🎯 A full-stack Machine Learning web app that predicts student performance based on study habits — with authentication, analytics, and live deployment.
