@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📊 Analytics Dashboard</h1>
+
+<!-- 🔥 STATS -->
+<div class="stats">
+    <div class="stat-box">
+        <h3>Average</h3>
+        <p id="avg"></p>
+    </div>
+    <div class="stat-box">
+        <h3>Max</h3>
+        <p id="max"></p>
+    </div>
+    <div class="stat-box">
+        <h3>Min</h3>
+        <p id="min"></p>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>📈 Prediction Trend</h3>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>📊 Study vs Marks</h3>
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>🎯 Performance Distribution</h3>
+        <canvas id="pieChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+const rawData = {{ data | tojson | safe }};
+
+// Safety check
+if (!rawData || rawData.length === 0) {
+    alert("No data available. Please add predictions first.");
+}
+
+// Extract values
+const predictions = rawData.map(d => Number(d.prediction));
+const hours = rawData.map(d => Number(d.hours));
+
+// 📊 Stats
+const avg = predictions.reduce((a,b)=>a+b,0)/predictions.length;
+const max = Math.max(...predictions);
+const min = Math.min(...predictions);
+
+document.getElementById("avg").innerText = avg.toFixed(2);
+document.getElementById("max").innerText = max;
+document.getElementById("min").innerText = min;
+
+// 📈 Line Chart
+new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+        labels: rawData.map(d => "H:" + d.hours),
+        datasets: [{
+            label: "Predicted Marks",
+            data: predictions,
+            borderColor: "#3b82f6",
+            backgroundColor: "rgba(59,130,246,0.2)",
+            tension: 0.4,
+            fill: true
+        }]
+    }
+});
+
+// 📊 Bar Chart
+new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+        labels: rawData.map(d => "H:" + d.hours + " | A:" + d.attendance),
+        datasets: [{
+            label: "Marks",
+            data: predictions,
+            backgroundColor: "#22c55e"
+        }]
+    }
+});
+
+// 🎯 Pie Chart
+const categories = predictions.map(p => 
+    p >= 75 ? "Good" : p >= 50 ? "Average" : "Low"
+);
+
+new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+        labels: ["Good", "Average", "Low"],
+        datasets: [{
+            data: [
+                categories.filter(c=>c==="Good").length,
+                categories.filter(c=>c==="Average").length,
+                categories.filter(c=>c==="Low").length
+            ],
+            backgroundColor: ["#22c55e", "#facc15", "#ef4444"]
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

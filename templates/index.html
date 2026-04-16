@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Predictor</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #020617, #0f172a);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .welcome {
+            color: #38bdf8;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        input::placeholder {
+            color: #bbb;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .predict-btn {
+            background: #22c55e;
+            color: white;
+        }
+
+        .predict-btn:hover {
+            background: #16a34a;
+        }
+
+        .dash-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row a {
+            width: 100%;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #facc15;
+        }
+
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>🎯 AI Predictor</h1>
+    <div class="welcome">Welcome, {{ session['user'] }}</div>
+
+    <input id="hours" type="number" placeholder="Study Hours">
+    <input id="attendance" type="number" placeholder="Attendance %">
+    <input id="sleep" type="number" placeholder="Sleep Hours">
+    <input id="prev" type="number" placeholder="Previous Marks">
+
+    <button class="predict-btn" onclick="predict()">Predict</button>
+
+    <div class="row">
+        <a href="/analytics"><button class="dash-btn">Dashboard</button></a>
+        <a href="/logout"><button class="logout-btn">Logout</button></a>
+    </div>
+
+    <div id="result" class="result"></div>
+    <div id="error" class="error"></div>
+
+</div>
+
+<script>
+async function predict() {
+
+    const hours = document.getElementById("hours").value;
+    const attendance = document.getElementById("attendance").value;
+    const sleep = document.getElementById("sleep").value;
+    const prev = document.getElementById("prev").value;
+
+    // ✅ Validation
+    if (!hours || !attendance || !sleep || !prev) {
+        document.getElementById("error").innerText = "Please fill all fields!";
+        return;
+    }
+
+    document.getElementById("error").innerText = "";
+    document.getElementById("result").innerText = "Predicting...";
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                hours,
+                attendance,
+                sleep,
+                prev_marks: prev
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+            document.getElementById("error").innerText = result.error;
+            document.getElementById("result").innerText = "";
+        } else {
+            document.getElementById("result").innerText =
+                "🎯 Predicted Marks: " + result.prediction;
+        }
+
+    } catch (err) {
+        document.getElementById("error").innerText = "Server error!";
+        document.getElementById("result").innerText = "";
+    }
+}
+</script>
+
+</body>
+</html>
