@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Predictor{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+{% if session.get('user') %}
+<div class="navbar">
+    <div class="brand">🎯 Smart Predictor</div>
+    <nav>
+        <a href="/" class="{{ 'active' if active == 'home' }}">Predict</a>
+        <a href="/analytics" class="{{ 'active' if active == 'analytics' }}">Dashboard</a>
+        <a href="/profile" class="{{ 'active' if active == 'profile' }}">Profile</a>
+        <a href="/logout" class="logout">Logout</a>
+    </nav>
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

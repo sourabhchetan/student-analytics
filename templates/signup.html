@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Signup · Smart Predictor{% endblock %}
+{% block content %}
+<div class="page center">
+  <div class="card">
+    <h2>📝 Signup</h2>
+
+    {% if error %}
+      <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        <input name="username" placeholder="Username" required autofocus>
+        <input name="password" type="password" placeholder="Password (min 8 characters)" required minlength="8">
+        <button type="submit" class="btn-blue">Create Account</button>
+    </form>
+
+    <a class="link-line" href="/login">Already have an account?</a>
+  </div>
+</div>
+{% endblock %}

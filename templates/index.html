@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Predict · Smart Predictor{% endblock %}
+{% block content %}
+<div class="page center">
+  <div class="card">
+    <h1>🎯 AI Predictor</h1>
+    <div class="subtle">Welcome, {{ session['user'] }}</div>
+
+    <input id="hours" type="number" step="0.1" min="0" max="24" placeholder="Study Hours (0–24)">
+    <input id="attendance" type="number" step="0.1" min="0" max="100" placeholder="Attendance % (0–100)">
+    <input id="sleep" type="number" step="0.1" min="0" max="24" placeholder="Sleep Hours (0–24)">
+    <input id="prev" type="number" step="0.1" min="0" max="100" placeholder="Previous Marks (0–100)">
+
+    <button class="btn-green" id="predict-btn" onclick="predict()">Predict</button>
+
+    <div id="result" class="result"></div>
+    <div id="recommendation" class="recommendation"></div>
+    <div id="error" class="error-msg"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function predict() {
+    const hours = document.getElementById("hours").value;
+    const attendance = document.getElementById("attendance").value;
+    const sleep = document.getElementById("sleep").value;
+    const prev = document.getElementById("prev").value;
+
+    const errorEl = document.getElementById("error");
+    const resultEl = document.getElementById("result");
+    const recEl = document.getElementById("recommendation");
+    const btn = document.getElementById("predict-btn");
+
+    errorEl.innerText = "";
+    recEl.innerText = "";
+
+    if (!hours || !attendance || !sleep || !prev) {
+        errorEl.innerText = "Please fill all fields!";
+        return;
+    }
+
+    btn.disabled = true;
+    resultEl.innerText = "Predicting…";
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ hours, attendance, sleep, prev_marks: prev })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+            errorEl.innerText = result.error || "Something went wrong.";
+            resultEl.innerText = "";
+        } else {
+            resultEl.innerText = "🎯 Predicted Marks: " + result.prediction;
+            if (result.recommendation && result.recommendation.gain > 0) {
+                const r = result.recommendation;
+                recEl.innerText =
+                    `+${r.extra_hours}h study → ~${r.improved} marks (+${r.gain})`;
+            }
+            showToast("Prediction saved to your dashboard", "success");
+        }
+    } catch (err) {
+        errorEl.innerText = "Server error — please try again.";
+        resultEl.innerText = "";
+    } finally {
+        btn.disabled = false;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Smart Predictor{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page">
+<div class="dash-wrap">
+
+<h1>📊 Analytics Dashboard</h1>
+
+{% if not data %}
+  <div class="empty-state">
+    <h3>No predictions yet</h3>
+    <p>Head to <a href="/">Predict</a> to generate your first one.</p>
+  </div>
+{% else %}
+
+<div class="toolbar">
+  <a href="/export"><button class="btn-outline">⬇ Export CSV</button></a>
+</div>
+
+<div class="stats">
+    <div class="stat-box"><h3>Average</h3><p id="avg">—</p></div>
+    <div class="stat-box"><h3>Max</h3><p id="max">—</p></div>
+    <div class="stat-box"><h3>Min</h3><p id="min">—</p></div>
+    <div class="stat-box">
+        <h3>Class Average</h3>
+        <p>{{ class_avg if class_avg is not none else "—" }}</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card-chart">
+        <h3>📈 Prediction Trend</h3>
+        <canvas id="lineChart"></canvas>
+    </div>
+    <div class="card-chart">
+        <h3>📊 Study vs Marks</h3>
+        <canvas id="barChart"></canvas>
+    </div>
+    <div class="card-chart">
+        <h3>🎯 Performance Distribution</h3>
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<div class="card-chart" style="margin-top:20px;">
+    <h3>🕓 History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th><th>Hours</th><th>Attendance</th><th>Sleep</th>
+                <th>Prev Marks</th><th>Prediction</th><th></th>
+            </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+    </table>
+</div>
+
+{% endif %}
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const rawData = {{ data | tojson | safe }};
+
+if (rawData && rawData.length > 0) {
+    const predictions = rawData.map(d => Number(d.prediction));
+
+    const avg = predictions.reduce((a,b)=>a+b,0)/predictions.length;
+    document.getElementById("avg").innerText = avg.toFixed(2);
+    document.getElementById("max").innerText = Math.max(...predictions);
+    document.getElementById("min").innerText = Math.min(...predictions);
+
+    new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: {
+            labels: rawData.map(d => "H:" + d.hours),
+            datasets: [{
+                label: "Predicted Marks",
+                data: predictions,
+                borderColor: "#3b82f6",
+                backgroundColor: "rgba(59,130,246,0.2)",
+                tension: 0.4,
+                fill: true
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+            labels: rawData.map(d => "H:" + d.hours + " | A:" + d.attendance),
+            datasets: [{ label: "Marks", data: predictions, backgroundColor: "#22c55e" }]
+        }
+    });
+
+    const categories = predictions.map(p => p >= 75 ? "Good" : p >= 50 ? "Average" : "Low");
+    new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+            labels: ["Good", "Average", "Low"],
+            datasets: [{
+                data: [
+                    categories.filter(c=>c==="Good").length,
+                    categories.filter(c=>c==="Average").length,
+                    categories.filter(c=>c==="Low").length
+                ],
+                backgroundColor: ["#22c55e", "#facc15", "#ef4444"]
+            }]
+        }
+    });
+
+    // History table, newest first, with a delete action per row.
+    const tbody = document.getElementById("history-body");
+    [...rawData].reverse().forEach(row => {
+        const tr = document.createElement("tr");
+        const time = row.time ? new Date(row.time).toLocaleString() : "—";
+        tr.innerHTML = `
+            <td>${time}</td>
+            <td>${row.hours}</td>
+            <td>${row.attendance}</td>
+            <td>${row.sleep}</td>
+            <td>${row.previous_marks}</td>
+            <td>${row.prediction}</td>
+            <td>${row._id ? `<button class="del-btn" data-id="${row._id}">Delete</button>` : ""}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    tbody.addEventListener("click", async (e) => {
+        if (!e.target.matches(".del-btn")) return;
+        const id = e.target.dataset.id;
+        try {
+            const res = await fetch(`/history/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                e.target.closest("tr").remove();
+                showToast("Entry deleted", "success");
+            } else {
+                showToast("Could not delete entry", "error");
+            }
+        } catch {
+            showToast("Server error", "error");
+        }
+    });
+}
+</script>
+{% endblock %}
