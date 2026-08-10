@@ -1,143 +1,121 @@
 # 🚀 AI Student Performance Predictor
 
-> 🎯 A full-stack Machine Learning web app that predicts student performance based on study habits — with authentication, analytics, and live deployment.
+> An end-to-end Machine Learning web application that predicts student academic performance from study habits and academic indicators, with secure authentication, cloud database integration, analytics, and production deployment.
+
+🌐 **Live Demo:**  
+https://student-analytics-qv2d.onrender.com
+
+🐙 **GitHub Repository:**  
+https://github.com/sourabhchetan/student-analytics
 
 ---
 
-## 🌐 Live Demo
+## 📌 Overview
 
-👉 https://student-analytics-qv2d.onrender.com
+**AI Student Performance Predictor** is a full-stack Machine Learning application designed to help students understand and analyze their academic performance.
 
----
+The application takes key student-related inputs such as:
 
-## ✨ Features
+- 📚 Study Hours
+- 📅 Attendance Percentage
+- 😴 Sleep Hours
+- 📊 Previous Marks
 
-✔️ User Signup & Login (Authentication System)
-✔️ ML-based Prediction Engine
-✔️ Interactive Analytics Dashboard (Charts)
-✔️ Data stored in MongoDB Atlas (Cloud DB)
-✔️ Fully deployed on cloud (Render)
+and uses a trained Machine Learning model to estimate the student's expected marks.
 
----
+Each prediction is stored in **MongoDB Atlas**, allowing users to review their previous predictions through an interactive analytics dashboard.
 
-## 🧠 How It Works
+The project demonstrates an end-to-end workflow:
 
-1. User logs into the system
-2. Inputs:
-
-   * Study Hours
-   * Attendance
-   * Sleep Hours
-   * Previous Marks
-3. ML model processes input
-4. Predicts expected marks
-5. Stores result in database
-6. Dashboard visualizes trends
+**Frontend → Flask API → Machine Learning Model → MongoDB Atlas → Analytics Dashboard**
 
 ---
 
-## 🛠️ Tech Stack
+# ✨ Current Features
 
-| Layer      | Technology            |
-| ---------- | --------------------- |
-| Frontend   | HTML, CSS, JavaScript |
-| Backend    | Flask (Python)        |
-| Database   | MongoDB Atlas         |
-| ML Model   | Scikit-learn          |
-| Deployment | Render                |
+### 🔐 Authentication
 
----
+- User Signup
+- User Login
+- User Logout
+- Session-based authentication
+- Password hashing
+- User-specific prediction history
 
-## 📊 Architecture
+### 🤖 Machine Learning
 
-User → Flask Backend → ML Model → MongoDB Atlas → Dashboard UI
+- Student performance prediction
+- Scikit-learn based ML model
+- Model trained using student performance data
+- Automated prediction from multiple academic/behavioral features
+- Saved trained model using Pickle
 
----
+### 📊 Analytics Dashboard
 
-## 📸 Screenshots
+- Prediction history
+- Predicted marks visualization
+- Study hours analysis
+- Interactive charts
+- User-specific analytics
 
-### 🔐 Login Page
+### 👤 User Profile
 
+- User profile page
+- Authenticated user information
+- Personalized application experience
 
-<img width="1876" height="885" alt="login" src="https://github.com/user-attachments/assets/ba9712f8-858e-4b53-9a34-720c9342bb18" />
+### 🗄️ Database
 
+- MongoDB Atlas integration
+- Separate users collection
+- Separate predictions collection
+- User-specific prediction storage
+- MongoDB indexes for username uniqueness
 
-### 🎯 Prediction Page
+### ☁️ Production Deployment
 
-
-<img width="1849" height="864" alt="Prediction" src="https://github.com/user-attachments/assets/aba82b69-fb9f-41aa-8773-3738247e2076" />
-
-
-### 📊 Dashboard
-
-
-<img width="1854" height="883" alt="dashboard" src="https://github.com/user-attachments/assets/44268496-a792-42ea-8d4a-36b89a8fd249" />
-
-
----
-
-## ⚙️ Run Locally
-
-```bash
-git clone https://github.com/sourabhchetan/student-analytics.git
-cd student-analytics
-pip install -r requirements.txt
-
-# Windows
-set MONGO_URI=your_connection_string
-
-# Mac/Linux
-export MONGO_URI=your_connection_string
-
-python run.py
-```
+- Deployed on Render
+- Gunicorn WSGI server
+- MongoDB Atlas cloud database
+- Environment variable based configuration
+- Production-ready Flask deployment structure
 
 ---
 
-## 🔐 Environment Variables
+# 🧠 How It Works
 
-| Variable   | Description                     |
-| ---------- | ------------------------------- |
-| MONGO_URI  | MongoDB Atlas connection string |
-| SECRET_KEY | Flask session secret            |
-
----
-
-## 📈 Future Enhancements
-
-* 📊 Advanced filters in dashboard
-* 📱 Mobile responsive UI
-* 🤖 Better ML model accuracy
-* 👨‍💼 Admin panel
-* 📡 REST API support
-
----
-
-## 🧪 Project Highlights
-
-* End-to-end ML integration
-* Real-time data storage
-* Secure authentication system
-* Production deployment
-
----
-
-## 👨‍💻 Author
-
-**Sourabh Chetan**
-🎓 MCA Student
-💻 Full Stack Developer | ML Enthusiast
-
----
-
-## ⭐ Support
-
-If you like this project:
-👉 Give it a ⭐ on GitHub
-👉 Share with others
-
----
-
-## 🧾 License
-
-This project is open-source and free to use.
+```text
+                  ┌─────────────────────┐
+                  │       Student       │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   Web Interface     │
+                  │   HTML/CSS/JS       │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   Flask Backend     │
+                  │   Authentication    │
+                  │   API Routes        │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   ML Prediction     │
+                  │   Scikit-learn      │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   MongoDB Atlas     │
+                  │ Users + Predictions│
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │ Analytics Dashboard │
+                  │ Charts + History    │
+                  └─────────────────────┘
